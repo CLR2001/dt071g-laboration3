@@ -1,3 +1,4 @@
+// Klass för ett gästbok objekt som hanterar lagring och radering av inlägg
 public class Guestbook(IPostStorage storage)
 {
   private readonly List<Post> _posts = storage.Load();

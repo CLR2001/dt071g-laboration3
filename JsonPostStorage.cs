@@ -1,5 +1,6 @@
 using System.Text.Json;
 
+// Klass för att spara/ ladda inlägg i formatet JSON.
 public class JsonPostStorage(string filename) : IPostStorage
 {
   public List<Post> Load()

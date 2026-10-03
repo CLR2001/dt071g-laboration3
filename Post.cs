@@ -1,3 +1,4 @@
+// Klass för ett inlägg som innehåller en lätt felhantering genom att inte släppa igenom null eller whitespace.
 public class Post
 {
   private string _owner = string.Empty;

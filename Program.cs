@@ -3,7 +3,7 @@
  * Kurskod: DT071G
  * Uppgift: Laboration 3
  * Datum: 2026-10-02
- * Beskrivning: 
+ * Beskrivning: Ett konsolprogram som tillåter en användare att skriva och radera inlägg i en gästbok. Alla inlägg sparas i en extern JSON-fil.
  */
 
 IPostStorage storage = new JsonPostStorage("guestbook.json");
@@ -19,6 +19,7 @@ while (true)
   switch (char.ToLower(userInput.KeyChar))
   {
     case '1':
+      // Skriver ut gränssnittet och kör det tills användaren är klar och boolean blir true
       bool isAdding = true;
       while (isAdding)
       {
@@ -30,6 +31,8 @@ while (true)
 
         Console.Write("Namn:");
         var userName = ReadLineOrExit();
+
+        // Accepterar namn om det inte är null eller whitespace
         if (string.IsNullOrWhiteSpace(userName))
         {
           Console.WriteLine("\nNamn får inte vara tomt! Tryck på valfri tangent för att försöka igen...");
@@ -37,6 +40,7 @@ while (true)
           continue;
         }
 
+        // Accepterar meddelande om det inte är null eller whitespace
         Console.Write("Meddelande:");
         var message = ReadLineOrExit();
         if (string.IsNullOrWhiteSpace(message))
@@ -46,6 +50,7 @@ while (true)
           continue;
         }
 
+        // Om allt är korrekt sparas inlägget
         guestbook.AddPost(userName, message);
         Console.WriteLine("\nMeddelandet lades till i gästboken!");
         Console.WriteLine("(Tryck på valfri tangent för att fortsätta...)");
@@ -56,6 +61,7 @@ while (true)
       break;
 
     case '2':
+      // Skriver ut gränssnittet och kör det tills användaren är klar och boolean blir true
       bool isDeleting = true;
       while (isDeleting)
       {
@@ -81,6 +87,7 @@ while (true)
 
         var indexToDelete = ReadLineOrExit();
 
+        // Kollar vilket värde ReadLineOrExit returnerar och låter användaren antingen försöka igen eller raderar inlägget efter ett giltligt index.
         if (indexToDelete == null)
         {
           break;
@@ -162,25 +169,30 @@ static string? ReadLineOrExit()
   var input = new System.Text.StringBuilder();
   while (true)
   {
+
     var pressedKey = Console.ReadKey(intercept: true);
 
+    // Kollar om esc trycks och returnerar null i så fall
     if (pressedKey.Key == ConsoleKey.Escape)
     {
       return null;
     }
     
+    // Kollar om enter trycks och returnerar strängen/input
     if (pressedKey.Key == ConsoleKey.Enter)
     {
       Console.WriteLine();
       return input.ToString();
     }
 
+    // Kollar om backspace trycks och raderar senaste tecknet från strängen
     if (pressedKey.Key == ConsoleKey.Backspace && input.Length > 0)
     {
       input.Remove(input.Length - 1, 1);
       Console.Write("\b \b");
     }
 
+    // Om en ett tecken som inte är en control-tangent trycks läggs det till i strängen
     else if (!char.IsControl(pressedKey.KeyChar))
     {
       input.Append(pressedKey.KeyChar);
