@@ -1,8 +1,8 @@
 ﻿/*
  * Skapare: Ludvig Rosenqvist
  * Kurskod: DT071G
- * Uppgift: Laboration 2.1
- * Datum: 2026-09-14
+ * Uppgift: Laboration 3
+ * Datum: 2026-10-02
  * Beskrivning: 
  */
 
@@ -11,7 +11,7 @@ var guestbook = new Guestbook(storage);
 
 while (true)
 {
-  Console.SetCursorPosition(0, 0);
+  Console.Clear();
 
   PrintMenu(guestbook);
   var userInput = Console.ReadKey(intercept: true);
@@ -19,40 +19,93 @@ while (true)
   switch (char.ToLower(userInput.KeyChar))
   {
     case '1':
-      Console.Clear();
-      Console.WriteLine("────────────────────────────────────────────────");
-      Console.WriteLine("               Lägg till inlägg                 ");
-      Console.WriteLine("────────────────────────────────────────────────");
-      Console.WriteLine("(Tryck på Esc när som helst för att avbryta)\n");
-
-      Console.WriteLine("Namn:");
-      var userName = ReadLineOrExit();
-      if (string.IsNullOrWhiteSpace(userName))
+      bool isAdding = true;
+      while (isAdding)
       {
         Console.Clear();
-        break;
+        Console.WriteLine("────────────────────────────────────────────────");
+        Console.WriteLine("               Lägg till inlägg                 ");
+        Console.WriteLine("────────────────────────────────────────────────");
+        Console.WriteLine("(Tryck på Esc när som helst för att avbryta)\n");
+
+        Console.Write("Namn:");
+        var userName = ReadLineOrExit();
+        if (string.IsNullOrWhiteSpace(userName))
+        {
+          Console.WriteLine("\nNamn får inte vara tomt! Tryck på valfri tangent för att försöka igen...");
+          Console.ReadKey(intercept: true);
+          continue;
+        }
+
+        Console.Write("Meddelande:");
+        var message = ReadLineOrExit();
+        if (string.IsNullOrWhiteSpace(message))
+        {
+          Console.WriteLine("\nMeddelande får inte vara tomt! Tryck på valfri tangent för att försöka igen...");
+          Console.ReadKey(intercept: true);
+          continue;
+        }
+
+        guestbook.AddPost(userName, message);
+        Console.WriteLine("\nMeddelandet lades till i gästboken!");
+        Console.WriteLine("(Tryck på valfri tangent för att fortsätta...)");
+        Console.ReadKey(intercept: true);
+        isAdding = false;
       }
 
-      Console.WriteLine("Meddelande:");
-      var message = ReadLineOrExit();
-      if (string.IsNullOrWhiteSpace(message))
-      {
-        Console.Clear();
-        break;
-      }
-
-      guestbook.AddPost(userName, message);
-      Console.Clear();
-      Console.WriteLine("Meddelandet lades till i gästboken!");
       break;
 
     case '2':
+      bool isDeleting = true;
+      while (isDeleting)
+      {
+        Console.Clear();
+        Console.WriteLine("────────────────────────────────────────────────");
+        Console.WriteLine("              Radera ett inlägg                 ");
+        Console.WriteLine("────────────────────────────────────────────────");
+        Console.WriteLine("(Tryck på Esc när som helst för att avbryta)");
+        Console.WriteLine();
+        Console.WriteLine("────────────────────────────────────────");
+        Console.WriteLine("  INLÄGG:");
+        Console.WriteLine("────────────────────────────────────────");
+
+        var posts = guestbook.GetPosts();
+        for (int i = 0; i < posts.Count; i++)
+        {
+          Console.WriteLine($"  [{i}] {posts[i].Owner} - {posts[i].Content}");
+        }
+
+        Console.WriteLine("────────────────────────────────────────");
+        Console.WriteLine();
+        Console.Write("Välj ett inlägg att ta bort (index):");
+
+        var indexToDelete = ReadLineOrExit();
+
+        if (indexToDelete == null)
+        {
+          break;
+        }
+
+        if (int.TryParse(indexToDelete, out int index) && index >= 0 && index < posts.Count)
+        {
+          guestbook.DeletePost(index);
+          Console.WriteLine($"\nInlägget med index {index} raderades.");
+          Console.WriteLine("(Tryck på valfri tangent för att fortsätta...)");
+          Console.ReadKey(intercept: true);
+          isDeleting = false;
+        }
+        else
+        {
+          Console.WriteLine("\nOgiltigt index! Tryck på valfri tangent för att försöka igen...");
+          Console.ReadKey(intercept: true);
+        }
+      }
 
       break;
 
     case 'x':
-
-      break;
+      Console.WriteLine("\nAvslutar programmet...");
+      return;
 
     default:
       Console.WriteLine("\nOgiltligt val, tryck på valfri tangent för att försöka igen...");
@@ -78,7 +131,6 @@ static void PrintMenu(Guestbook guestbook)
   Console.WriteLine("────────────────────────────────────────");
   Console.WriteLine("  INLÄGG:");
   Console.WriteLine("────────────────────────────────────────");
-
 
   var posts = guestbook.GetPosts();
   for (int i = 0; i < posts.Count; i++)

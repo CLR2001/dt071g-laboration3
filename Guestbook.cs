@@ -14,10 +14,17 @@ public class Guestbook(IPostStorage storage)
     return post;
   }
 
-  public bool DeletePost(Post post)
+  public bool DeletePost(int index)
   {
-    bool removed = _posts.Remove(post);
-    if (removed) storage.Save(_posts);
-    return removed;
+    if (index >= 0 && index < _posts.Count)
+    {
+      _posts.RemoveAt(index);
+      storage.Save(_posts);
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
 }
